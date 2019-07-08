@@ -36,7 +36,7 @@ bool WebSocket::PerformClientUpgrade(const HTTP::HTTPResponse& response, const C
 
         if (key == "Connection")
         {
-            if (value != "Upgrade")
+            if (value != "upgrade" && value != "Upgrade")
             {
                 error = true;
                 onWSError("Invalid WebSocket handshaked response: 'Connection' header value must be 'Upgrade'");
