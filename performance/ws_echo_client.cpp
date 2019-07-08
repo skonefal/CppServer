@@ -32,18 +32,18 @@ std::atomic<uint64_t> total_messages(0);
 class EchoClient : public WSClient
 {
 public:
-    EchoClient(std::shared_ptr<Service> service, const std::string& address, int port, int messages)
+    EchoClient(std::shared_ptr<Service> service, const std::string& address, const std::string& location, int port, int messages)
         : WSClient(service, address, port),
-          _messages(messages)
-    {
-    }
+          _messages(messages),
+          _location(location)
+    {}
 
     void SendMessage() { SendBinaryAsync(message_to_send.data(), message_to_send.size()); }
 
 protected:
     void onWSConnecting(CppServer::HTTP::HTTPRequest& request) override
     {
-        request.SetBegin("GET", "/");
+        request.SetBegin("GET", this->_location);
         request.SetHeader("Host", "localhost");
         request.SetHeader("Origin", "http://localhost");
         request.SetHeader("Upgrade", "websocket");
@@ -87,6 +87,7 @@ private:
     size_t _sent{0};
     size_t _received{0};
     size_t _messages{0};
+    const std::string _location;
 };
 
 int main(int argc, char** argv)
@@ -94,6 +95,7 @@ int main(int argc, char** argv)
     auto parser = optparse::OptionParser().version("1.0.0.0");
 
     parser.add_option("-a", "--address").dest("address").set_default("127.0.0.1").help("Server address. Default: %default");
+    parser.add_option("-l", "--location").dest("location").set_default("/").help("Resource location. Default: %default");
     parser.add_option("-p", "--port").dest("port").action("store").type("int").set_default(8080).help("Server port. Default: %default");
     parser.add_option("-t", "--threads").dest("threads").action("store").type("int").set_default(CPU::PhysicalCores()).help("Count of working threads. Default: %default");
     parser.add_option("-c", "--clients").dest("clients").action("store").type("int").set_default(100).help("Count of working clients. Default: %default");
@@ -112,6 +114,7 @@ int main(int argc, char** argv)
 
     // Client parameters
     std::string address(options.get("address"));
+    std::string location(options.get("location"));
     int port = options.get("port");
     int threads_count = options.get("threads");
     int clients_count = options.get("clients");
@@ -120,6 +123,7 @@ int main(int argc, char** argv)
     int seconds_count = options.get("seconds");
 
     std::cout << "Server address: " << address << std::endl;
+    std::cout << "Server location: " << location << std::endl;
     std::cout << "Server port: " << port << std::endl;
     std::cout << "Working threads: " << threads_count << std::endl;
     std::cout << "Working clients: " << clients_count << std::endl;
@@ -145,7 +149,7 @@ int main(int argc, char** argv)
     for (int i = 0; i < clients_count; ++i)
     {
         // Create echo client
-        auto client = std::make_shared<EchoClient>(service, address, port, messages_count);
+        auto client = std::make_shared<EchoClient>(service, address, location, port, messages_count);
         // client->SetupNoDelay(true);
         clients.emplace_back(client);
     }
