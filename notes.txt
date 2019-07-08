@@ -1,0 +1,30 @@
+    curl -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSocket-Version: 13" -H "Sec-WebSocket-Key: dzik" localhost:9090/websockify/8080 
+
+request.SetHeader("Upgrade", "websocket");
+request.SetHeader("Sec-WebSocket-Key", CppCommon::Encoding::Base64Encode(id().string()));
+request.SetHeader("Sec-WebSocket-Protocol", "chat, superchat");
+request.SetHeader("Sec-WebSocket-Version", "13");
+
+
+[skonefal@localhost CppServer]$ curl -v  -H "Connection: Upgrade" -H "Upgrade: websocket" -H "Sec-WebSock
+et-Version: 13" -H "Sec-WebSocket-Key: dzik" localhost:9090/websockify/8080 
+*   Trying ::1...
+* TCP_NODELAY set
+* Connected to localhost (::1) port 9090 (#0)
+> GET /websockify/8080 HTTP/1.1
+> Host: localhost:9090
+> User-Agent: curl/7.61.1
+> Accept: */*
+> Connection: Upgrade
+> Upgrade: websocket
+> Sec-WebSocket-Version: 13
+> Sec-WebSocket-Key: dzik
+> 
+< HTTP/1.1 101 
+< Upgrade: websocket
+< Connection: upgrade
+< Sec-WebSocket-Accept: NJ1coU/krqEdo1/bIqota/bym5U=
+< Date: Mon, 08 Jul 2019 20:51:54 GMT
+
+
+JA JEBIEEE KURWA DUZE I MALE PIERWDOLONE LITERKY KURWAAAAAAAAAAAAAAAAAAa
